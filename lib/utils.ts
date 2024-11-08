@@ -2,6 +2,7 @@
 import { type ClassValue, clsx } from "clsx";
 import qs from "query-string";
 import { twMerge } from "tailwind-merge";
+import { z } from "zod";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -193,3 +194,44 @@ export const getTransactionStatus = (date: Date) => {
 
   return date > twoDaysAgo ? "Processing" : "Success";
 };
+
+export const authFormSchema = (type: string) => z.object({
+  email: z.string().email({
+      message: "E-mail inválido.",
+  }),
+  password: z.string().min(8, {
+    message: "Senha deve conter pelo menos 8 caracteres.",
+}),
+
+  // cadastrar
+  firstName: type === 'sign-in' ? z.string().optional() : z.string().min(3, {
+    message: "Nome deve conter pelo menos 3 caracteres.",
+}),
+  lastName: type === 'sign-in' ? z.string().optional() : z.string().min(3, {
+    message: "Ultimo nome deve conter pelo menos 3 caracteres.",
+}),
+  address: type === 'sign-in' ? z.string().optional() : z.string().max(50, {
+    message: "Endereço deve conter até 50 caracteres",
+}),
+city: type === 'sign-in' ? z.string().optional() : z.string().max(50, {
+  message: "Cidade deve conter até 50 caracteres",
+}),
+  state: type === 'sign-in' ? z.string().optional() : z.string().max(2, {
+    message: "Estado deve 2 caracteres.",
+}).min(2, {
+    message: "Estado deve 2 caracteres.",
+}),
+  postalCode: type === 'sign-in' ? z.string().optional() : z.string().min(9, {
+    message: "Cep inválido.",
+}).max(9, {
+  message: "Cep inválido.",
+}),
+  dateOfBirth: type === 'sign-in' ? z.string().optional() : z.string().max(10, {
+    message: "Data inválida.",
+  }),
+  ssn: type === 'sign-in' ? z.string().optional() : z.string().max(4, {
+    message: "SSN inválido.",
+  }).min(4, {
+    message: "SSN inválido.",
+  }),
+})
